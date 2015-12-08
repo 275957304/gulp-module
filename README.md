@@ -26,11 +26,15 @@ gulp.task('default', function () {
 第四步：运行！
 $ gulp
 
+
+
+
 几个核心的 API 函数
 gulp.task(name[, deps], fn)：注册任务name 是任务名称；deps 是可选的数组，其中列出需要在本任务运行要执行的任务；fn 是任务体，这是 gulp.js 的核心了，需要花时间吃透它，详情见此。
 gulp.src(globs[, options])：指明源文件路径用过Grunt 的话，globs 一定不会陌生，这里没什么变化；options 是可选的，具体请查看 gulp.js API
 gulp.dest(path)：指明任务处理后的目标输出路径
 gulp.watch(glob[, options], tasks)／gulp.watch(glob[, options, cb])：监视文件的变化并运行相应的任务。你没看错，watch 作为核心 API 出现在 gulp.js 里了，具体用法还是要多看文档，不过接下来我们会演示简单的例子。
+
 
 
 常用的插件：
