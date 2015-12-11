@@ -1,0 +1,139 @@
+/*
+    安装插件
+*   gulp-imagemin: 压缩图片  
+    gulp-ruby-sass: 支持sass
+*   gulp-minify-css: 压缩css 
+    gulp-jshint: 检查js      
+*   gulp-uglify: 压缩js      
+    gulp-concat: 合并文件
+    less-plugin-autoprefix --save-dev   处理 css3 前缀
+*   gulp-rev    自动生成文件版本
+    gulp-rev-collector  ---gulp-rev配合gulp-rev-collector实现非覆盖式发布
+    gulp-rename: 重命名文件
+    gulp-htmlmin: 压缩html
+    gulp-clean: 清空文件夹
+    gulp-livereload: 服务器控制客户端同步刷新（需配合chrome插件LiveReload及tiny-lr）
+    gulp-csslint  //
+*   gulp-css-spriter 将css代码中的切片图片合并成雪碧图
+    gulp-livereload   自动刷新
+
+*/
+
+var gulp = require('gulp'),
+    minifyCSS = require('gulp-minify-css'),  //压缩css 
+    uglify = require('gulp-uglify'),   //压缩js 
+    clean = require('gulp-clean'),
+    jshint = require('gulp-jshint'),
+    imagemin = require('gulp-imagemin'),    //压缩图片
+    spriter = require('gulp-css-spriter'),  //图片合并
+    livereload = require('gulp-livereload');  //自动刷新
+
+var handleError = function (err) {
+    var colors = gutil.colors;
+    console.log('\n')
+    gutil.log(colors.red('Error!'))
+    gutil.log('fileName: ' + colors.red(err.fileName))
+    gutil.log('lineNumber: ' + colors.red(err.lineNumber))
+    gutil.log('message: ' + err.message)
+    gutil.log('plugin: ' + colors.yellow(err.plugin))
+}
+
+
+
+gulp.task('watchcss', function() {
+    var timestamp = +new Date();
+    //需要自动合并雪碧图的样式文件
+    return gulp.src('./src/css/style.css')
+    .pipe(spriter({
+        // 生成的spriter的位置
+        'spriteSheet': './dist/images/sprite' + timestamp + '.png',
+        // 生成样式文件图片引用地址的路径
+        // 如下将生产：backgound:url(../images/sprite20324232.png)
+        'pathToSpriteSheetFromCSS': '../images/sprite' + timestamp + '.png'
+    }))
+    .pipe(minifyCSS())  //压缩文件 css
+    //产出路径
+    .pipe(gulp.dest('./dist/css'));  // 另存压缩后的文件
+});
+
+
+//在命令使用 gulp watchjs 启动此任务
+gulp.task('watchjs', function () {
+    gulp.watch('src/js/*.js', function (event) { //监听文件修改，当文件修改则执行
+        var paths = watchPath(event, 'src/', 'dist/')
+
+        gutil.log(gutil.colors.green(event.type) + ' ' + paths.srcPath)
+        gutil.log('Dist ' + paths.distPath)
+
+        var combined = combiner.obj([
+            gulp.src(paths.srcPath),
+            sourcemaps.init(),
+            uglify(),
+            sourcemaps.write('./'),
+            gulp.dest(paths.distDir)
+        ])
+
+        combined.on('error', handleError)
+    })
+})
+
+
+gulp.task('watchimage', function () {
+    gulp.watch('src/images/*', function (event) {
+        var paths = watchPath(event,'src/','dist/')
+        gutil.log(gutil.colors.green(event.type) + ' ' + paths.srcPath)
+        gutil.log('Dist ' + paths.distPath)
+
+        gulp.src(paths.srcPath)
+        .pipe(imagemin({
+            progressive: true
+        }))
+        .pipe(gulp.dest(paths.distDir))
+    })
+})
+
+gulp.task('clean', function() {  
+    return gulp.src(['dist/css', 'dist/js', 'dist/images'], {
+        read: false
+    })
+    .pipe(clean());
+});
+
+
+
+//检测JS
+gulp.task('lintJs', function (){
+    gulp.src('js/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter()); // 输出检查结果
+});
+
+
+
+
+
+//自动刷新页面
+gulp.task('watch', function () {    // 这里的watch，是自定义的，写成live或者别的也行
+    var server = livereload();    
+    // app/**/*.*的意思是 app文件夹下的 任何文件夹 的 任何文件
+    gulp.watch('src/**/*.*', function (file) {
+        server.changed(file.path);
+    });
+});
+
+
+
+/*
+var gulp = require('gulp'),
+    less = require("gulp-less");
+ 
+gulp.task('compile-less', function () {
+    gulp.src('less/*.less')
+    .pipe(less())
+    .pipe(gulp.dest('dist/css'));
+});
+*/
+
+
+//在命令使用 gulp 启动 后面的任务
+gulp.task('default', ['watchjs', 'lintJs', 'watchcss', 'watchimage' ,'watch'])
