@@ -104,3 +104,6 @@ gulp.task('task_name', function () {
 
 gulp插件库
 http://gulpjs.com/plugins/
+
+
+https://www.browsersync.io/docs/gulp/   浏览器自动刷新 http://www.mamicode.com/info-detail-517085.html
