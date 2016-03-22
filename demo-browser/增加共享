@@ -33,5 +33,24 @@ I:\wamp\bin\apache\apache2.4.9\conf
     ServerAlias 192.168.1.26
 </VirtualHost>
 
+或者
+<VirtualHost *:80>
+    ServerAdmin webmaster@dummy-host.example.com
+    DocumentRoot "c:/Apache24/docs/dummy-host.example.com"
+    ServerName dummy-host.example.com
+    ServerAlias localhost
+    ErrorLog "logs/dummy-host.example.com-error.log"
+    CustomLog "logs/dummy-host.example.com-access.log" common
+</VirtualHost>
 
+<VirtualHost *:80>
+    ServerAdmin webmaster@dummy-host2.example.com
+    DocumentRoot "c:/Apache24/docs/dummy-host2.example.com"
+    ServerName dummy-host2.example.com
+    ErrorLog "logs/dummy-host2.example.com-error.log"
+    CustomLog "logs/dummy-host2.example.com-access.log" common
+	ServerAlias 192.168.1.30
+</VirtualHost>
+
+http://192.168.1.30:3000
 
