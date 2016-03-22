@@ -1,0 +1,37 @@
+运行 gulp  自动刷新屏幕
+
+//增加一个共享功能
+
+1:修改host
+C:\Windows\System32\drivers\etc  
+cmd ipconfig
+IPv4地址.................:192.168.1.30
+
+2:修改Apache配置
+WampServer  -->  Apache  ---->   httpd.conf
+I:\wamp\bin\apache\apache2.4.9\conf
+查找Include conf/extra/httpd-vhosts.conf，去掉前面的#号
+继续在配置文件里面查找Deny from all，并且在每一个Deny from all下面添加Allow from all，整个配置文件有三处
+或都查找 Directory
+
+<Directory "I:/wamp/bin/apache/apache2.4.9/cgi-bin">
+    AllowOverride None
+    Options None
+    Require all granted
+	Deny from all
+	Allow from all
+</Directory>
+
+3:修改httpd-vhosts.conf中信息，其路径为：..\wamp\bin\apache\apache2.2.8\conf\extra\httpd-vhosts.conf
+<VirtualHost *:80>
+    DocumentRoot "D:\wamp\www"
+    ServerAlias localhost
+</VirtualHost>
+
+<VirtualHost *:80>
+    DocumentRoot "D:\wamp\www"
+    ServerAlias 192.168.1.26
+</VirtualHost>
+
+
+
